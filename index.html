@@ -7,14 +7,16 @@
         <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
         <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js'></script>
         <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.1.0/fullcalendar.min.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.1.0/gcal.min.js'></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.11/moment-timezone-with-data.min.js"></script>
 	    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 	    
 	    <link rel="stylesheet" type="text/css" href="styles/landing.css">
 	    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css">
-	    
     </head>
     <body>
 	    <!--FullCalendar container div-->
+	    <h1>My Calendar</h1>
 	    <div id='calendar'></div>
         <div id="createEventModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
             <div class="modal-header">
@@ -45,7 +47,14 @@
             </div>
         </div>
         <script>
+            
             $('#calendar').fullCalendar({
+                googleCalendarApiKey: 'AIzaSyBUiNvaBMiHO2r0a8ziBhOjSvj_ngyHSmM',
+                events: {
+                    googleCalendarId: 'https://calendar.google.com/calendar/embed?src=victoriaevandijk%40gmail.com&ctz=America/New_York'
+                },
+                timezone		: "local",
+                timezoneParam	: "UTC",
                 timeslotsPerHour: 4,
                 defaultView: 'agendaWeek',
                 allowCalEventOverlap: true,
@@ -54,31 +63,17 @@
                 daysToShow: 7,
                 selectable: true,
                 editable: true,
-                customButtons: {
-                    addEvent: {
-                        text: 'Add Event',
-                        click: function(start, end, allDay) {
-                            var starttime = moment(start).format('ddd, MMM do, h:mma ');
-                            var endtime = moment(end).format('ddd, MMM do, h:mma ');
-                            var mywhen = starttime + ' - ' + endtime;
-                            $('#createEventModal #apptStartTime').val(start);
-                            $('#createEventModal #apptEndTime').val(end);
-                            $('#createEventModal #apptAllDay').val(allDay);
-                            $('#createEventModal #when').text(mywhen);
-                            $('#createEventModal').modal('show');
-                        }
-                    }
-                },
+                slotMinutes: 15,
                 header: {
                     left: 'prevYear,prev,next,nextYear today',
                     center: 'title',
-                    right: 'addEvent month,agendaWeek,agendaDay'
+                    right: 'month,agendaWeek,agendaDay'
                 },
 
                 select: function(start, end, allDay) {
-                    var starttime = moment(start).format('ddd, MMM do, h:mma ');
-                    var endtime = moment(end).format('ddd, MMM do, h:mma ');
-                    var mywhen = starttime + ' - ' + endtime;
+                    var starttime = moment(start).tz('America/New_York').format('ddd, MMM do, h:mma');
+                    var endtime = moment(end).tz('America/New_York').format('ddd, MMM do, h:mma ');
+                    var mywhen = moment(start).tz('America/New_York').format('h:mma') + ' - ' + moment(end).tz('America/New_York').format('h:mma');
                     $('#createEventModal #apptStartTime').val(start);
                     $('#createEventModal #apptEndTime').val(end);
                     $('#createEventModal #apptAllDay').val(allDay);
