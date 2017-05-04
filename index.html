@@ -63,7 +63,19 @@
           firebase.initializeApp(config);
         </script>
         <script>
-            
+            var ref = firebase.database().ref().child("events");
+            var eventData = [];
+            var startDate = "";
+            var endDate = "";
+            ref.on("value", function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    eventData.push(childSnapshot.val());
+                    $("#calendar").fullCalendar('renderEvent',
+                        childSnapshot.val(),
+                        true);
+                })
+                });
+
             $('#calendar').fullCalendar({
                 timezone: "local",
                 timezoneParam: "UTC",
@@ -80,10 +92,12 @@
                     center: 'title',
                     right: 'month,agendaWeek,agendaDay, listWeek'
                 },
+                
+                events: eventData,
 
                 select: function(start, end, allDay) {
-                    var starttime = moment(start).format('ddd, MMM do, h:mma');
-                    var endtime = moment(end).format('ddd, MMM do, h:mma ');
+                    startDate = JSON.stringify(moment(start).format("ddd MMM DD YYYY h:mm:ss aZ"));
+                    endDate = JSON.stringify(moment(end).format("ddd MMM DD YYYY h:mm:ss aZ"));
                     var mywhen = moment(start).format('h:mma') + ' - ' + moment(end).format('h:mma');
                     $('#createEventModal #apptStartTime').val(start);
                     $('#createEventModal #apptEndTime').val(end);
@@ -102,28 +116,27 @@
 
             function doSubmit(){
                 $("#createEventModal").modal('hide');
-                console.log($('#apptStartTime').val());
-                console.log($('#apptEndTime').val());
-                console.log($('#apptAllDay').val());
         
                 writeEventData(                    
                         $('#apptName').val(),
-                        Date($('#apptStartTime').val()),
+                        startDate,
                         ($('#apptAllDay').val() == "true"),
                         $('#description').val(),
-                        Date($('#apptEndTime').val())
+                        endDate
                     );
                     
                 $("#calendar").fullCalendar('renderEvent',
                     {
                         title: $('#apptName').val(),
-                        start: new Date($('#apptStartTime').val()),
-                        end: new Date($('#apptEndTime').val()),
+                        start: startDate,
+                        end: endDate,
                         allDay: ($('#apptAllDay').val() == "true"),
                         description: $('#description').val(),
                     },
                 true);
             };
+
+
             function writeEventData(title, start, allDay, description, end) {
               var ref = firebase.database().ref().child("events");
               var neweventRef = ref.push();
