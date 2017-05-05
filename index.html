@@ -104,6 +104,14 @@
                     $('#createEventModal #apptAllDay').val(allDay);
                     $('#createEventModal #when').text(mywhen);
                     $('#createEventModal').modal('show');
+                },
+                eventClick: function(event, element) {
+
+                    $('#createEventModal').modal('show');
+                    event.title = "Changed";
+
+                    $('#calendar').fullCalendar('updateEvent', event);
+
                 }
             });
 
@@ -117,7 +125,8 @@
             function doSubmit(){
                 $("#createEventModal").modal('hide');
         
-                writeEventData(                    
+                
+                    var key = writeEventData(                    
                         $('#apptName').val(),
                         startDate,
                         ($('#apptAllDay').val() == "true"),
@@ -132,6 +141,7 @@
                         end: endDate,
                         allDay: ($('#apptAllDay').val() == "true"),
                         description: $('#description').val(),
+                        id: key
                     },
                 true);
             };
@@ -147,6 +157,8 @@
                 allDay: allDay,
                 description: description
             });
+            
+            return neweventRef.key;
         }
         </script>
     </body>
