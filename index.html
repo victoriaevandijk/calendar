@@ -32,6 +32,7 @@
                             <input type="hidden" id="apptStartTime"/>
                             <input type="hidden" id="apptEndTime"/>
                             <input type="hidden" id="apptAllDay" />
+                            <input type="hidden" id="key" />
                         </div>
                     </div>
                     <div class="control-group">
@@ -105,12 +106,19 @@
                     $('#createEventModal #when').text(mywhen);
                     $('#createEventModal').modal('show');
                 },
+                
                 eventClick: function(event, element) {
-
+                    var mywhen = moment(event.start).format('h:mma') + ' - ' + moment(event.end).format('h:mma');
+                    $('#createEventModal #apptName').val(event.title);
+                    $('#createEventModal #key').val(event.id);
+                    $('#createEventModal #apptStartTime').val(event.start);
+                    $('#createEventModal #apptEndTime').val(event.end);
+                    $('#createEventModal #apptAllDay').val(event.allDay);
+                    $('#createEventModal #when').text(mywhen);
                     $('#createEventModal').modal('show');
-                    event.title = "Changed";
+                    // event.title = "Changed";
 
-                    $('#calendar').fullCalendar('updateEvent', event);
+                    // $('#calendar').fullCalendar('updateEvent', event);
 
                 }
             });
@@ -118,9 +126,15 @@
             $('#submitButton').on('click', function(e){
                 // We don't want this to act as a link so cancel the link action
                 e.preventDefault();
-
-                doSubmit();
+                var eventId = $('#createEventModal #key').val();
+                if (eventId) {
+                    deleteEvent(eventId);
+                    doSubmit();
+                } else {
+                    doSubmit();
+                }
             });
+            
 
             function doSubmit(){
                 $("#createEventModal").modal('hide');
@@ -144,7 +158,35 @@
                         id: key
                     },
                 true);
-            };
+            }
+            
+            function deleteEvent(id) {
+
+                $("#calendar").fullCalendar('removeEvents', id);
+                $("#createEventModal").modal('hide');
+            }
+            
+            // function updateEvents(key){
+            //         $("#createEventModal").modal('hide');
+                    
+            //         key = writeEventData(                    
+            //             $('#apptName').val(),
+            //             startDate,
+            //             ($('#apptAllDay').val() == "true"),
+            //             $('#description').val(),
+            //             endDate
+            //         );
+                
+            //         $('#calendar').fullCalendar('updateEvent', 
+            //             {
+            //                 title: $('#apptName').val(),
+            //                 start: startDate,
+            //                 end: endDate,
+            //                 allDay: ($('#apptAllDay').val() == "true"),
+            //                 description: $('#description').val(),
+            //                 id: key
+            //             }, true);
+            // }
 
 
             function writeEventData(title, start, allDay, description, end) {
@@ -156,10 +198,10 @@
                 end: end,
                 allDay: allDay,
                 description: description
-            });
+              });
             
-            return neweventRef.key;
-        }
+              return neweventRef.key;
+            }
         </script>
     </body>
 </html>
